@@ -5,6 +5,13 @@ interface EnvConfig {
   NODE_ENV: string;
   PORT: number;
   MONGO_URI: string;
+
+  EMAIL_HOST: string;
+  EMAIL_PORT: number;
+  EMAIL_USER: string;
+  EMAIL_PASS: string;
+
+  APP_URL: string;
 }
 
 function getEnvOrThrow(key: string): string {
@@ -19,6 +26,13 @@ const env: EnvConfig = {
   NODE_ENV: getEnvOrThrow("NODE_ENV"),
   PORT: parseInt(getEnvOrThrow("PORT")),
   MONGO_URI: getEnvOrThrow("MONGO_URI"),
+
+  EMAIL_HOST: getEnvOrThrow("EMAIL_HOST"),
+  EMAIL_PORT: parseInt(getEnvOrThrow("EMAIL_PORT")),
+  EMAIL_USER: getEnvOrThrow("EMAIL_USER"),
+  EMAIL_PASS: getEnvOrThrow("EMAIL_PASS"),
+
+  APP_URL: getEnvOrThrow("APP_URL"),
 };
 
 if (!env.MONGO_URI) {
