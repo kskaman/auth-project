@@ -1,4 +1,4 @@
-import mongoose, { Schema, HydratedDocument } from "mongoose";
+import mongoose, { Schema, HydratedDocument, Model } from "mongoose";
 import bcrypt from "bcrypt";
 
 export type UserRole = "user" | "admin";
@@ -16,8 +16,9 @@ export interface IUserMethods {
 }
 
 export type UserDoc = HydratedDocument<IUser, IUserMethods>;
+export type UserModel = Model<IUser, {}, IUserMethods>;
 
-const userSchema = new Schema<IUser, {}, IUserMethods>(
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
     email: {
       type: String,
@@ -69,6 +70,6 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model<IUser>("User", userSchema);
+const User = mongoose.model<IUser, UserModel>("User", userSchema);
 
 export default User;

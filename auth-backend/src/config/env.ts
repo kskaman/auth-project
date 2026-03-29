@@ -1,3 +1,5 @@
+import { StringValue } from "ms";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,6 +14,9 @@ interface EnvConfig {
   EMAIL_PASS: string;
 
   APP_URL: string;
+
+  JWT_SECRET: string;
+  JWT_EXPIRES_IN: StringValue;
 }
 
 function getEnvOrThrow(key: string): string {
@@ -33,6 +38,9 @@ const env: EnvConfig = {
   EMAIL_PASS: getEnvOrThrow("EMAIL_PASS"),
 
   APP_URL: getEnvOrThrow("APP_URL"),
+
+  JWT_SECRET: getEnvOrThrow("JWT_SECRET"),
+  JWT_EXPIRES_IN: getEnvOrThrow("JWT_EXPIRES_IN") as StringValue,
 };
 
 if (!env.MONGO_URI) {

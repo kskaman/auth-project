@@ -4,9 +4,13 @@ import mongoose from "mongoose";
 // Maps known error messages to their HTTP status codes
 const errorStatusMap: Record<string, number> = {
   "User already exists": 409,
+  "Invalid credentials": 401,
+  "Please verify your email before logging in": 403,
+  "Account disabled. Contact support.": 403,
   "User not found": 404,
   "Verification token is required": 400,
   "Invalid or expired verification token": 400,
+  "Email and password are required": 400,
 };
 
 const errorHandler = (

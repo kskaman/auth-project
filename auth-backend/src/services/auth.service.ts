@@ -6,6 +6,7 @@ import { generateToken, hashToken } from "../utils/token.util";
 import { sendEmail } from "../services/email.service";
 import { buildVerificationEmail } from "../utils/emailTemplate.util";
 import env from "../config/env";
+import { signAccessToken } from "../utils/jwt.util";
 
 export const registerUser = async (email: string, password: string) => {
   // Check if user already exists
@@ -74,5 +75,47 @@ export const verifyEmail = async (token: string) => {
 
   return {
     message: "Email verified successfully. You can now log in.",
+  };
+};
+
+export const loginUser = async (email: string, password: string) => {
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+
+  const isMatch = await user.comparePassword(password);
+
+  if (!isMatch) {
+    throw new Error("Invalid credentials");
+  }
+
+  if (user.status === "unverified") {
+    throw new Error("Please verify your email before logging in");
+  }
+
+  if (user.status === "disabled") {
+    throw new Error("Account disabled. Contact support.");
+  }
+
+  const payload = {
+    userId: user._id.toString(),
+    role: user.role,
+  };
+
+  const accessToken = signAccessToken(payload);
+
+  return {
+    accessToken,
+    user: {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    },
   };
 };
