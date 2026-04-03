@@ -6,12 +6,15 @@ const errorStatusMap: Record<string, number> = {
   "Verification token is required": 400,
   "Invalid or expired verification token": 400,
   "Email and password are required": 400,
+  "Password reset token is required": 400,
+  "Invalid or expired password reset token": 400,
 
   "Invalid credentials": 401,
   "Authorization header is missing": 401,
   "Authorization header is malformed": 401,
   "Invalid or expired token": 401,
   "User not authenticated": 401,
+  "Session expired. Please log in again": 401,
 
   "Please verify your email before logging in": 403,
   "Account disabled. Contact support.": 403,

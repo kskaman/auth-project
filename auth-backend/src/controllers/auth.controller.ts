@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
-import { loginUser, registerUser, verifyEmail } from "../services/auth.service";
+import {
+  forgotPassword,
+  loginUser,
+  registerUser,
+  resetPassword,
+  verifyEmail,
+} from "../services/auth.service";
 
 export const registerController = async (
   req: Request,
@@ -37,6 +43,45 @@ export const loginController = async (
 ) => {
   try {
     const result = await loginUser(req.body.email, req.body.password);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const result = await forgotPassword(email);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.query.token as string;
+    const newPassword = req.body.password;
+
+    if (!token) {
+      throw new Error("Password reset token is required");
+    }
+
+    if (!newPassword) {
+      throw new Error("New password is required");
+    }
+
+    const result = await resetPassword(token, newPassword);
     res.json(result);
   } catch (error) {
     next(error);

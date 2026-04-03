@@ -2,8 +2,9 @@ import type { RequestHandler } from "express";
 
 import { verifyAccessToken } from "../utils/jwt.util";
 import type { AuthRequest } from "../types/authenticated-request";
+import User from "../models/user.model";
 
-const authenticate: RequestHandler = (req, res, next) => {
+const authenticate: RequestHandler = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -19,8 +20,21 @@ const authenticate: RequestHandler = (req, res, next) => {
 
   try {
     const payload = verifyAccessToken(token);
-    const jwtPayload = payload as { userId: string; role: "user" | "admin" };
+    const jwtPayload = payload as {
+      userId: string;
+      role: "user" | "admin";
+      tokenVersion: number;
+    };
 
+    const user = await User.findById(jwtPayload.userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.tokenVersion !== jwtPayload.tokenVersion) {
+      throw new Error("Session expired. Please log in again.");
+    }
     const authReq = req as AuthRequest;
     authReq.user = {
       id: jwtPayload.userId,

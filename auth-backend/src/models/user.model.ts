@@ -9,6 +9,7 @@ export interface IUser {
   password: string;
   role: UserRole;
   status: UserStatus;
+  tokenVersion: number;
 }
 
 export interface IUserMethods {
@@ -49,6 +50,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       type: String,
       enum: ["unverified", "active", "disabled"],
       default: "unverified",
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },
