@@ -8,6 +8,7 @@ const errorStatusMap: Record<string, number> = {
   "Email and password are required": 400,
   "Password reset token is required": 400,
   "Invalid or expired password reset token": 400,
+  "Current and new password are required": 400,
 
   "Invalid credentials": 401,
   "Authorization header is missing": 401,
@@ -15,6 +16,7 @@ const errorStatusMap: Record<string, number> = {
   "Invalid or expired token": 401,
   "User not authenticated": 401,
   "Session expired. Please log in again": 401,
+  "Current password is incorrect": 401,
 
   "Please verify your email before logging in": 403,
   "Account disabled. Contact support.": 403,
