@@ -6,13 +6,14 @@ import {
   resetPasswordController,
   verifyEmailController,
 } from "../controllers/auth.controller";
+import { loginLimiter } from "../middlewares/rateLimit.middleware";
 
 const router = express.Router();
 
 router.post("/register", registerController);
 router.get("/verify-email", verifyEmailController);
-router.post("/login", loginController);
-router.post("/forgot-password", forgotPasswordController);
+router.post("/login", loginLimiter, loginController);
+router.post("/forgot-password", loginLimiter, forgotPasswordController);
 router.post("/reset-password", resetPasswordController);
 
 export default router;

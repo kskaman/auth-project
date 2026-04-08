@@ -8,6 +8,8 @@ import {
   verifyEmail,
 } from "../services/auth.service";
 
+import { listUsers, setUserStatus } from "../services/admin.service";
+
 export const registerController = async (
   req: Request,
   res: Response,
@@ -82,6 +84,39 @@ export const resetPasswordController = async (
     }
 
     const result = await resetPassword(token, newPassword);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const listUsersController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const status = (req.query.status as string) || "";
+    const search = (req.query.search as string) || "";
+
+    const result = await listUsers({ status, search });
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const adminId = (req as any).user.id;
+    const targetUserId = req.params.id;
+    const { status } = req.body;
+
+    const result = await setUserStatus(adminId, targetUserId, status);
     res.json(result);
   } catch (error) {
     next(error);

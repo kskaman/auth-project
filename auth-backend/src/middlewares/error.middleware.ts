@@ -9,6 +9,8 @@ const errorStatusMap: Record<string, number> = {
   "Password reset token is required": 400,
   "Invalid or expired password reset token": 400,
   "Current and new password are required": 400,
+  "Admins cannot change their own account status": 400,
+  "Invalid account status": 400,
 
   "Invalid credentials": 401,
   "Authorization header is missing": 401,
