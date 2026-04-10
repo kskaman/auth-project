@@ -21,6 +21,7 @@ const errorStatusMap: Record<string, number> = {
   "Current password is incorrect": 401,
   "Token expired. Please log in again.": 401,
   "Invalid Authentication token": 401,
+  "Invalid or expired refresh token": 401,
 
   "Please verify your email before logging in": 403,
   "Account disabled. Contact support.": 403,

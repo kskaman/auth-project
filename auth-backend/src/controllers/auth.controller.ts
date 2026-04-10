@@ -4,6 +4,7 @@ import {
   forgotPassword,
   loginUser,
   logoutUser,
+  refreshAccessToken,
   registerUser,
   resetPassword,
   verifyEmail,
@@ -100,6 +101,20 @@ export const logoutController = async (
   try {
     const userId = (req as any).user.id;
     const result = await logoutUser(userId);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const refreshTokenController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { refreshToken } = req.body;
+    const result = await refreshAccessToken(refreshToken);
     res.json(result);
   } catch (error) {
     next(error);

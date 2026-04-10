@@ -1,6 +1,7 @@
 import User from "../models/user.model";
 
 import EmailVerificationToken from "../models/emailVerificationToken.model";
+import RefreshToken from "../models/refreshToken.model";
 
 import { generateToken, hashToken } from "../utils/token.util";
 import { sendEmail } from "../services/email.service";
@@ -9,7 +10,11 @@ import {
   buildVerificationEmail,
 } from "../utils/emailTemplate.util";
 import env from "../config/env";
-import { signAccessToken } from "../utils/jwt.util";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt.util";
 import PasswordResetToken from "../models/passwordResetToken.model";
 
 export const registerUser = async (email: string, password: string) => {
@@ -114,9 +119,18 @@ export const loginUser = async (email: string, password: string) => {
   };
 
   const accessToken = signAccessToken(payload);
+  const refreshToken = signRefreshToken(payload);
+
+  // Store refresh token in database
+  await RefreshToken.create({
+    userId: user._id,
+    token: refreshToken,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  });
 
   return {
     accessToken,
+    refreshToken,
     user: {
       id: user._id.toString(),
       email: user.email,
@@ -128,16 +142,69 @@ export const loginUser = async (email: string, password: string) => {
 export const logoutUser = async (userId: string) => {
   // Invalidate all existing tokens by incrementing token version
   const user = await User.findById(userId);
-  
+
   if (!user) {
     throw new Error("User not found");
   }
-  
+
   user.tokenVersion += 1;
   await user.save();
-  
+
+  // Delete all refresh tokens for this user
+  await RefreshToken.deleteMany({ userId });
+
   return {
     message: "Logged out successfully",
+  };
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+  if (!refreshToken) {
+    throw new Error("Refresh token is required");
+  }
+
+  // Verify the refresh token
+  let payload: any;
+  try {
+    payload = verifyRefreshToken(refreshToken);
+  } catch (error) {
+    throw new Error("Invalid or expired refresh token");
+  }
+
+  // Check if refresh token exists in database
+  const tokenRecord = await RefreshToken.findOne({
+    token: refreshToken,
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (!tokenRecord) {
+    throw new Error("Refresh token not found or expired");
+  }
+
+  // Get user and verify token version
+  const user = await User.findById(payload.userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.tokenVersion !== payload.tokenVersion) {
+    // Delete invalid refresh token
+    await RefreshToken.deleteOne({ token: refreshToken });
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  // Generate new access token
+  const newPayload = {
+    userId: user._id.toString(),
+    role: user.role,
+    tokenVersion: user.tokenVersion,
+  };
+
+  const accessToken = signAccessToken(newPayload);
+
+  return {
+    accessToken,
   };
 };
 

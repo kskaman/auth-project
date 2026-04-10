@@ -3,6 +3,7 @@ import {
   forgotPasswordController,
   loginController,
   logoutController,
+  refreshTokenController,
   registerController,
   resetPasswordController,
   verifyEmailController,
@@ -16,6 +17,7 @@ router.post("/register", registerController);
 router.get("/verify-email", verifyEmailController);
 router.post("/login", loginLimiter, loginController);
 router.post("/logout", authenticate, logoutController);
+router.post("/refresh-token", refreshTokenController);
 router.post("/forgot-password", loginLimiter, forgotPasswordController);
 router.post("/reset-password", resetPasswordController);
 

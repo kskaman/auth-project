@@ -17,6 +17,8 @@ interface EnvConfig {
 
   JWT_SECRET: string;
   JWT_EXPIRES_IN: StringValue;
+  JWT_REFRESH_SECRET: string;
+  JWT_REFRESH_EXPIRES_IN: StringValue;
 }
 
 function getEnvOrThrow(key: string): string {
@@ -41,6 +43,8 @@ const env: EnvConfig = {
 
   JWT_SECRET: getEnvOrThrow("JWT_SECRET"),
   JWT_EXPIRES_IN: getEnvOrThrow("JWT_EXPIRES_IN") as StringValue,
+  JWT_REFRESH_SECRET: getEnvOrThrow("JWT_REFRESH_SECRET"),
+  JWT_REFRESH_EXPIRES_IN: getEnvOrThrow("JWT_REFRESH_EXPIRES_IN") as StringValue,
 };
 
 if (!env.MONGO_URI) {
