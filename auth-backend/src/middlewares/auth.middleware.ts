@@ -42,7 +42,10 @@ const authenticate: RequestHandler = async (req, res, next) => {
     };
     next();
   } catch (err) {
-    throw new Error("Invalid or expired token");
+    if (err instanceof Error && err.name === "TokenExpiredError") {
+      throw new Error("Token expired. Please log in again.");
+    }
+    throw new Error("Invalid Authentication token");
   }
 };
 

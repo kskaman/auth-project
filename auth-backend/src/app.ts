@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import morgan from "morgan";
 
 import router from "./routes/index";
 import notFound from "./middlewares/notFound.middleware";
@@ -12,8 +13,10 @@ const app = express();
 
 app.use(helmet());
 app.use(globalLimiter);
-app.use(sanitize);
 
+app.use(morgan("combined"));
+
+app.use(sanitize);
 app.use(express.json());
 
 app.use("/api", router);
