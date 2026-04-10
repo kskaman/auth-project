@@ -16,8 +16,8 @@ app.use(globalLimiter);
 
 app.use(morgan("combined"));
 
-app.use(sanitize);
 app.use(express.json());
+app.use(sanitize);
 
 app.use("/api", router);
 

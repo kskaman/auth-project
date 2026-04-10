@@ -13,6 +13,6 @@ router.use(authenticate);
 router.use(authorizeRole("admin"));
 
 router.get("/users", listUsersController);
-router.post("/users/:userIDd/status", updateUserStatus);
+router.patch("/users/:targetUserId/status", updateUserStatus);
 
 export default router;

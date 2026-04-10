@@ -125,6 +125,22 @@ export const loginUser = async (email: string, password: string) => {
   };
 };
 
+export const logoutUser = async (userId: string) => {
+  // Invalidate all existing tokens by incrementing token version
+  const user = await User.findById(userId);
+  
+  if (!user) {
+    throw new Error("User not found");
+  }
+  
+  user.tokenVersion += 1;
+  await user.save();
+  
+  return {
+    message: "Logged out successfully",
+  };
+};
+
 export const forgotPassword = async (email: string) => {
   const user = await User.findOne({ email });
 

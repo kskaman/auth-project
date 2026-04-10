@@ -3,12 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import {
   forgotPassword,
   loginUser,
+  logoutUser,
   registerUser,
   resetPassword,
   verifyEmail,
 } from "../services/auth.service";
 
 import { listUsers, setUserStatus } from "../services/admin.service";
+import { AuthRequest } from "../types/authenticated-request";
 
 export const registerController = async (
   req: Request,
@@ -90,6 +92,20 @@ export const resetPasswordController = async (
   }
 };
 
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = (req as any).user.id;
+    const result = await logoutUser(userId);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const listUsersController = async (
   req: Request,
   res: Response,
@@ -107,13 +123,17 @@ export const listUsersController = async (
 };
 
 export const updateUserStatus = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const adminId = (req as any).user.id;
-    const targetUserId = req.params.id;
+    if (!req.user) {
+      throw new Error("User not authenticated");
+    }
+
+    const adminId = req.user.id;
+    const targetUserId = req.params.targetUserId;
     const { status } = req.body;
 
     const result = await setUserStatus(adminId, targetUserId, status);
